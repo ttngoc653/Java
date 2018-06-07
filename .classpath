@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="JDBC-QLNhanVien/src"/>
+	<classpathentry kind="src" path="Matrix/src"/>
+	<classpathentry kind="src" path="OOP-Farm-CountLegs/src"/>
+	<classpathentry kind="src" path="OOP-Shape-S_and_Cv/src"/>
+	<classpathentry kind="output" path="JDBC-QLNhanVien/out/production/1460653.4"/>
+</classpath>
