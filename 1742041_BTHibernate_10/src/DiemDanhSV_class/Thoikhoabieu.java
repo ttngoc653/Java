@@ -110,5 +110,17 @@ public class Thoikhoabieu implements java.io.Serializable {
 	public void setTenPhongHoc(String tenPhongHoc) {
 		this.tenPhongHoc = tenPhongHoc;
 	}
-
+	public static int convertThuTrongTuan(String str_thu_trong_tuan) {
+		switch (str_thu_trong_tuan) {
+		case "Ch\u1EE7 Nh\u1EADt": return 1;
+		case "Th\u1EE9 Hai": return 2;
+		case "Th\u1EE9 Ba": return 3;
+		case "Th\u1EE9 T\\u01B0": return 4;
+		case "Th\u1EE9 N\\u0103m": return 5;
+		case "Th\u1EE9 S\\u00E1u": return 6;
+		case "Th\u1EE9 B\\u1EA3y": return 7;
+		default:
+			return 0;
+		}
+	}
 }

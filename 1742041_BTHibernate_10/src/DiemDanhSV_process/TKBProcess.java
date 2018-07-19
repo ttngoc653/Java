@@ -31,6 +31,17 @@ public class TKBProcess {
 		
 		return false;
 	}
+	public static int create(ViewTKB vTkb) {
+		if(!attend(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc())))
+			return  0;
+		return ConnectDb.insert(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()))?1:2;
+	}
+	public static boolean update(ViewTKB vTkb) {
+		return ConnectDb.update(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()));
+	}
+	public static boolean delete(ViewTKB vTkb) {
+		return ConnectDb.delete(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()));
+	}
 	public static boolean create(Thoikhoabieu tkb) {
 		return ConnectDb.insert(tkb);
 	}

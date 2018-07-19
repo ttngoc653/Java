@@ -1,5 +1,6 @@
 package DiemDanhSV_process;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -21,12 +22,12 @@ public class MonHocProcess {
 			Query qry = ss.createQuery("SELECT n.tenMonHoc FROM Monhoc n");
 			List<String> list = qry.list();
 			System.out.println(list.size());
-			if(list.size() == 0) return null;
+			if(list.size() == 0) return list;
 			else return list;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 	@SuppressWarnings("unchecked")
 	public static List<Monhoc> getDanhSachMonHoc() {
