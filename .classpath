@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="1742041_BTHibernate_10/src"/>
+	<classpathentry kind="src" path="frmStudentManagement/src"/>
+	<classpathentry kind="src" path="JDBC-QLNhanVien/src"/>
+	<classpathentry kind="src" path="Matrix/src"/>
+	<classpathentry kind="src" path="OOP-Farm-CountLegs/src"/>
+	<classpathentry kind="src" path="OOP-Shape-S_and_Cv/src"/>
+	<classpathentry kind="lib" path="1742041_BTHibernate_10/jgoodies-forms-1.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="1742041_BTHibernate_10/jgoodies-forms-1.8.0.jar"/>
+	<classpathentry kind="lib" path="1742041_BTHibernate_10/miglayout15-swing.jar"/>
+	<classpathentry kind="lib" path="1742041_BTHibernate_10/mysql-connector-java-5.1.34-bin.jar"/>
+	<classpathentry kind="lib" path="frmStudentManagement/jgoodies-forms-1.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="frmStudentManagement/jgoodies-forms-1.8.0.jar"/>
+	<classpathentry kind="lib" path="comm-2.0.jar"/>
+	<classpathentry kind="output" path="1742041_BTHibernate_10/target/classes"/>
+</classpath>
