@@ -26,6 +26,9 @@ import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.Closeable;
 
 public class TaoMonHoc extends JFrame {
 
@@ -57,6 +60,16 @@ public class TaoMonHoc extends JFrame {
 	 * Create the frame.
 	 */
 	public TaoMonHoc() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			}
+			@Override
+			public void windowClosed(WindowEvent e) {
+				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			}
+		});
 		setResizable(false);
 		setTitle("TH\u00CAM M\u00D4N H\u1ECCC");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

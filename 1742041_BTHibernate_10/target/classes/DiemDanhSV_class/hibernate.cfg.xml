@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <mapping resource="Buoihoc.hbm.xml"/>
+        <mapping resource="Diemdanh.hbm.xml"/>
+        <mapping resource="Monhoc.hbm.xml"/>
+        <mapping resource="Thoikhoabieu.hbm.xml"/>
+        <mapping resource="Nguoidung.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>

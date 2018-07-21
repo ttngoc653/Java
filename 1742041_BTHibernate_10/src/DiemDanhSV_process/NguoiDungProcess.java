@@ -20,7 +20,6 @@ public class NguoiDungProcess {
 	}
 	@SuppressWarnings("unchecked")
 	public static Nguoidung login(Nguoidung nd) {
-		//System.out.println("da vao ham...");
 		try {
 			ss = ConnectDb.createSession();
 			Query qry = ss.createQuery("FROM Nguoidung n WHERE n.tenDn like :in_ten_dn and n.matKhau like :in_mat_khau");
