@@ -1,5 +1,7 @@
 package DiemDanhSV_class;
 
+import java.text.SimpleDateFormat;
+
 // default package
 // Generated Jul 15, 2018 7:18:40 PM by Hibernate Tools 5.3.0.Beta2
 
@@ -44,6 +46,20 @@ public class Thoikhoabieu implements java.io.Serializable {
 		this.thuTrongTuan = thuTrongTuan;
 		this.gioBatDau = gioBatDau;
 		this.gioKetThuc = gioKetThuc;
+		this.tenPhongHoc = tenPhongHoc;
+	}
+	
+	public Thoikhoabieu(Integer answer, String str_ngay_bd, String str_ngay_kt, int thuTrongTuan, String str_gio_bd,
+			String str_gio_kt, String tenPhongHoc) {
+		this.maMonHoc = String.valueOf(answer);
+		try {
+			this.ngayBatDau = new SimpleDateFormat("dd/MM/yyyy").parse(str_ngay_bd);
+			this.ngayKetThuc = new SimpleDateFormat("dd/MM/yyyy").parse(str_ngay_kt);
+			this.gioBatDau = new SimpleDateFormat("HH:mm").parse(str_gio_bd);
+			this.gioKetThuc = new SimpleDateFormat("HH:mm").parse(str_gio_kt);
+		} catch (Exception e) {
+		}
+		this.thuTrongTuan = thuTrongTuan;
 		this.tenPhongHoc = tenPhongHoc;
 	}
 
