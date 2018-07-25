@@ -59,4 +59,7 @@ public class ConnectDb {
 		ss.flush();
 		return true;
 	}
+	public static String convertDate(String strDate) {
+		return strDate.split("-")[2] + "-" + strDate.split("-")[1] + "-" + strDate.split("-")[0];
+	}
 }

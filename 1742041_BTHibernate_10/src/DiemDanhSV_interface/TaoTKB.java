@@ -27,10 +27,9 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.table.DefaultTableModel;
 
+import DiemDanhSV_class.Thoikhoabieu;
 import DiemDanhSV_class.ViewTKB;
 
-import java.awt.event.HierarchyListener;
-import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -39,7 +38,6 @@ import java.text.SimpleDateFormat;
 import javax.swing.JFormattedTextField;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.management.ThreadMXBean;
 
 public class TaoTKB extends JFrame {
 
@@ -201,13 +199,19 @@ public class TaoTKB extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					switch (TKBProcess.create(new ViewTKB(cbbMonHoc.getSelectedItem().toString(), txtNgayBD.getText(), txtNgayKT.getText(), cbbThu.getSelectedItem().toString(), txtGioBD.getText(), txtGioKT.getText(), txtPhongHoc.getText()))) {
-					case 0:
-					case 1:
-					case 2:
+					Integer answer = TKBProcess.create(new ViewTKB(cbbMonHoc.getSelectedItem().toString(), txtNgayBD.getText(), txtNgayKT.getText(), cbbThu.getSelectedItem().toString(), txtGioBD.getText(), txtGioKT.getText(), txtPhongHoc.getText()));
+					
+					switch (answer) {
+					case 0: JOptionPane.showMessageDialog(null, "Bị trùng thời gian hoặc phòng học.", "Thông báo", 1);
+						return;
+					case 2: JOptionPane.showMessageDialog(null, "Lỗi thêm thời khóa biểu.\nHãy kiểm lại nội dung nhập.", "Thông báo", 1);
+						return;
 					default:
 						break;
 					}
+					
+					TaoCacBuoiHoc frame = new TaoCacBuoiHoc(new Thoikhoabieu(answer, txtNgayBD.getText(), txtNgayKT.getText(), Thoikhoabieu.convertThuTrongTuan(cbbThu.getSelectedItem().toString()), txtGioBD.getText(), txtGioKT.getText(), txtPhongHoc.getText()));
+					
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}

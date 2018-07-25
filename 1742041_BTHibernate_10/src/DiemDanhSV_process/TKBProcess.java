@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import DiemDanhSV_class.Buoihoc;
+import DiemDanhSV_class.BuoihocId;
 import DiemDanhSV_class.Thoikhoabieu;
 import DiemDanhSV_class.ViewTKB;
 
@@ -33,8 +35,13 @@ public class TKBProcess {
 	}
 	public static int create(ViewTKB vTkb) {
 		if(!attend(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc())))
-			return  0;
-		return ConnectDb.insert(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()))?1:2;
+			return 0;
+		if(ConnectDb.insert(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc())) == false) return 2;
+		
+		Integer code = getCode(new Thoikhoabieu("", vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()));
+		ConnectDb.insert(new Buoihoc(new BuoihocId(code, vTkb.getNgayBatDau(), vTkb.getGioBatDau()), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()));
+		
+		return code + 100;
 	}
 	public static boolean update(ViewTKB vTkb) {
 		return ConnectDb.update(new Thoikhoabieu(MonHocProcess.getMaMonHoc(vTkb.getTenMonHoc()), vTkb.getNgayBatDau(), vTkb.getNgayKetThuc(), Thoikhoabieu.convertThuTrongTuan(vTkb.getThuTrongTuan()), vTkb.getGioBatDau(), vTkb.getGioKetThuc(), vTkb.getTenPhongHoc()));
@@ -55,10 +62,11 @@ public class TKBProcess {
 	public static Integer getCode(Thoikhoabieu tkb) {
 		try {
 			ss = ConnectDb.createSession();
-			Query qry = ss.createQuery("FROM Thoikhoabieu t WHERE t.gioBatDau = :in_gio_bd and t.ngayBatDau = :in_ngay_bd and t.tenPhongHoc like :in_ten_phong_hoc");
+			Query qry = ss.createQuery("FROM Thoikhoabieu t WHERE t.gioBatDau = :in_gio_bd AND t.ngayBatDau = :in_ngay_bd AND t.tenPhongHoc like :in_ten_phong_hoc AND t.maMonHoc like :in_mon_hoc");
 			qry.setParameter("in_gio_bd", tkb.getGioBatDau());
 			qry.setParameter("in_ngay_bd", tkb.getNgayBatDau());
 			qry.setParameter("in_ten_phong_hoc", tkb.getTenPhongHoc());
+			qry.setParameter("in_mon_hoc", tkb.getMaMonHoc());
 			List<Thoikhoabieu> list = qry.list();
 			System.out.println(list.size());
 			if(list.size() == 0) return null;
