@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -45,43 +46,57 @@ class ThreadLogin extends Thread {
 	
 	@Override
 	public void run() {
-		
 			try {
 				server = new ServerSocket(8605);
-				
 				System.out.println("IP OF SERVER: " + InetAddress.getLocalHost().getHostAddress());
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				System.out.println("ERROR WHEN CREATE SERVER CHAT!");
+				return;
 			}
 			
 			
 			while(true) {
 				try {
 					sk = server.accept();
-	
+					//System.out.println(sk.getPort() + " - "+ sk.getInetAddress().getHostAddress() +" - "+sk.getLocalAddress().getHostAddress());
 					//System.out.println("da tiep nhan");
 					
 					BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream(),"UTF-8"));
 				    
 					gson=new Gson();
 				    //java.lang.reflect.Type type=new TypeToken<ArrayList<String>>(){}.getType();
-					String user_name = gson.fromJson(in.readLine(),String.class);
+					String user_name = gson.fromJson(in.readLine(),String.class).trim();
 					
-					System.out.println("da tiep nhan "+user_name);
+					System.out.println("Received: "+user_name);
 					
 					Boolean equal = false;
 					for (User user : list_user)
 						if(user.name.equalsIgnoreCase(user_name))
 							equal = true;
 					
-					DataOutputStream out = new DataOutputStream(sk.getOutputStream());
-					out.writeBytes((equal ? "y" : "n")+'n');
+					PrintStream out = new PrintStream(sk.getOutputStream());
+					out.println(gson.toJson((!equal ? "y" : "n"), String.class));
+					out.flush();
 					if(equal) sk.close();
 					else {
+						System.out.println("Added " + user_name + "to  server!");
 						list_user.add(new User(user_name,sk));
-						ThreadReceiveMessenge th = new ThreadReceiveMessenge(sk, list_user, list_conversation);
-						th.run();
+						
+						List<String> conversastion_name = new ArrayList<>();
+						
+						for (Conversation conversation : list_conversation)
+							for(int i=0;i< conversation.users.split(", ").length;i++)
+								if(conversation.users.split(", ")[i].equals(user_name))
+									conversastion_name.add(conversation.users);
+						
+					    out.println(gson.toJson(conversastion_name));
+						out.flush();
+					    System.out.println(user_name + "đã vào lấy tin nhắn");
+						ThreadReceiveMessenge th = new ThreadReceiveMessenge(user_name, sk, list_user, list_conversation);
+						th.start();
 					}
 
 				} catch (Exception e) {
@@ -92,55 +107,65 @@ class ThreadLogin extends Thread {
 }
 
 class ThreadReceiveMessenge extends Thread {
-	public ThreadReceiveMessenge(Socket sk, List<User> list, List<Conversation> conversations) throws IOException {
+	private Gson gson = new Gson();
+	
+	public ThreadReceiveMessenge(String user, Socket sk, List<User> list, List<Conversation> conversations) throws Exception {
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));  
 		
 		while(true) {
 			try {
+				System.out.println("cho tin chuyen ve cua "+user);
 				String info = in.readLine();
-				
+				System.out.println(info);
 				if(info.split("\t_-_\t").length == 2) {
-				//format info: "<user sent messenger>: <content messenger> \t\t <group receive messenger>"
 					sentInfoMessenges(list,info);
 					
 					for(int i =0 ;i<conversations.size();i++) {
 						if(conversations.get(i).users.equals(info.split("\t_-_\t")[1])) {
 							conversations.get(i).messengers.add(info.split("\t_-_\t")[0]);
-							break;
+							// return;
 						}
 					}
 					List<String> messen = new ArrayList<>();
 					messen.add(info.split(" \t\t ")[0]);
 					
-					Conversation cvs= new Conversation(info.split("\t_-_\t")[1]+", "+info.split(": ")[0], messen);
+					Conversation cvs= new Conversation(info.split("\t_-_\t")[1], messen);
 					conversations.add(cvs);
 				} else {
-					DataOutputStream out = new DataOutputStream(sk.getOutputStream());
+					PrintStream out = new PrintStream(sk.getOutputStream());
 					for(int i =0 ;i<conversations.size();i++) {
 						if(conversations.get(i).users.equals(info.split("\t_-_\t")[1])) {
-							for (int j = conversations.get(i).messengers.size(); j >= 0; j--) {
-								out.writeUTF(conversations.get(i).messengers.get(i));
-							}
-							out.writeUTF("end");
+							out.println(gson.toJson(conversations.get(i).messengers));
+							out.flush();
 							break;
 						}
 					}
+					out.println(gson.toJson(new ArrayList<String>()));
+					out.flush();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+				list.remove(new User(user,sk));
+				return;
 			}
 		}
 	}
 	private void sentInfoMessenges(List<User> list, String info) {
-		for (String str : info.split(" \t ")[1].split(",")) {
+		for (String str : info.split("\t_-_\t")[1].split(", ")) {
+			PrintStream out;
+			
 			for (int i = 0; i < list.size(); i++) {
-				if(list.get(i).name.equalsIgnoreCase(str)) {
-					DataOutputStream out;
+				if(list.get(i).name.equalsIgnoreCase(str.trim())) {
 					try {
-						out = new DataOutputStream(list.get(i).socket.getOutputStream());
-						out.writeUTF(info+", "+info.split(": ")[0]);
+						out = new PrintStream(list.get(i).socket.getOutputStream());
+						System.out.println(list.get(i).name + " - " + info);
+						out.println(info);
+						out.flush();
+						BufferedReader in = new BufferedReader(new InputStreamReader(list.get(i).socket.getInputStream()));
+						System.out.println(in.readLine());
 						out.close();
-					} catch (IOException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -155,7 +180,7 @@ public class mainServer {
 		List<Conversation> conversation = new ArrayList<>();
 		
 		ThreadLogin login = new ThreadLogin(user, conversation);
-		login.run();
+		login.start();
 	}
 
 }

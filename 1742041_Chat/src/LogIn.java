@@ -118,31 +118,31 @@ public class LogIn extends JFrame {
 	
 	protected void connectDatabase(InetAddress ia){
 		try {
-			Socket sk = new Socket("localhost", 8605);
-			PrintStream out =new PrintStream(sk.getOutputStream());
+			Socket sk = new Socket(txtIP.getText(), 8605);
+			PrintStream out = new PrintStream(sk.getOutputStream());
 			
-			out.println(gson.toJson(txtName.getText(), String.class));
+			out.println(gson.toJson(txtName.getText().trim(), String.class));
 			
-			System.out.println("da gui ten cho server " + txtName.getText());
+			System.out.println("da gui ten cho server " + txtName.getText().trim());
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));  
 			String check = gson.fromJson(in.readLine(),String.class);
 			System.out.println("server da xet cho nguoi dung");
 			
-			out.close();
-			in.close();
+			// out.close();
+			// in.close();
 			
 			if(check.equalsIgnoreCase("y")) {
-				MainChat mc = new MainChat(sk,txtName.getText());
+				MainChat mc = new MainChat(sk,txtName.getText().trim());
 				mc.setVisible(true);
 				setVisible(false);
 			} else {
-				JOptionPane.showMessageDialog(null, txtName.getText() + "bị trùng tên. Hãy đặt tên nick khác", "KHÔNG VÀO ĐƯỢC", 0);
+				JOptionPane.showMessageDialog(null, txtName.getText().trim() + " bị trùng tên. Hãy đặt tên nick khác", "KHÔNG VÀO ĐƯỢC", 0);
+				sk.close();
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 }
