@@ -6,20 +6,45 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 class ThreadGetConversation extends Thread{
 	private DefaultListModel<String> dlm;
 	private Socket sk;
-	public ThreadGetConversation(DefaultListModel<String> _dlm, Socket _sk) {
+	private String user_choosed;
+	public ThreadGetConversation(DefaultListModel<String> _dlm, Socket _sk,String _user_choosed) {
 		dlm = _dlm;
 		sk = _sk;
+		user_choosed = _user_choosed;
 	}
 	public void run() {
+		dlm.removeAllElements();
+		try {
+			DataOutputStream out = new DataOutputStream(sk.getOutputStream());
+			out.writeUTF(user_choosed);
+			BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));
+
+			String str_conversation = in.readLine();
+			
+			do {
+				dlm.add(0, str_conversation);
+				str_conversation = in.readLine();
+			} while (!str_conversation.equals("end"));
+			
+			str_conversation = in.readLine();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }
@@ -54,6 +79,11 @@ public class MainChat extends JFrame {
 	 * Create the frame.
 	 */
 	public MainChat(Socket sk, String user) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+			}
+		});
 		setTitle("Chat of " + user);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 600, 600);
@@ -64,7 +94,7 @@ public class MainChat extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(!txtAddUser.getText().equals("") && arg0.getKeyCode() == KeyEvent.VK_ENTER && !searchItemsUser(dlmUser,txtAddUser.getText())) {
-					dlmUser.addElement(txtAddUser.getText());
+					dlmUser.addElement(user+", "+txtAddUser.getText());
 					txtAddUser.setText("");
 				}
 			}
@@ -84,8 +114,7 @@ public class MainChat extends JFrame {
 		listUser.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				user_selected  = listUser.getSelectedValue();
-				
-				
+				new ThreadGetConversation(dlmMessenger, sk, user_selected).start();
 			}
 		});
 		listUser.setBounds(0, 19, 149, 542);
@@ -106,7 +135,7 @@ public class MainChat extends JFrame {
 				if(user_selected.equals("")) return;
 				try {
 					DataOutputStream out = new DataOutputStream(sk.getOutputStream());
-					out.writeUTF(user + ": " + txtMessenger.getText() + "\t_-_\t" + dlmUser + ", " + user);
+					out.writeUTF(user + ": " + txtMessenger.getText() + "\t_-_\t" + dlmUser);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

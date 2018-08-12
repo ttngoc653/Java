@@ -3,6 +3,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.google.gson.Gson;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -15,15 +18,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class LogIn extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtIP;
 	private JTextField txtName;
@@ -108,14 +114,24 @@ public class LogIn extends JFrame {
 		contentPane.add(lblNewLabel);
 	}
 
-	@SuppressWarnings("resource")
+	private static Gson gson = new Gson();
+	
 	protected void connectDatabase(InetAddress ia){
 		try {
-			Socket sk = new Socket(ia, 8605);
-			DataOutputStream out = new DataOutputStream(sk.getOutputStream());
-			out.writeUTF(txtName.getText());
+			Socket sk = new Socket("localhost", 8605);
+			PrintStream out =new PrintStream(sk.getOutputStream());
+			
+			out.println(gson.toJson(txtName.getText(), String.class));
+			
+			System.out.println("da gui ten cho server " + txtName.getText());
+			
 			BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));  
-			String check = in.readLine();
+			String check = gson.fromJson(in.readLine(),String.class);
+			System.out.println("server da xet cho nguoi dung");
+			
+			out.close();
+			in.close();
+			
 			if(check.equalsIgnoreCase("y")) {
 				MainChat mc = new MainChat(sk,txtName.getText());
 				mc.setVisible(true);
@@ -124,8 +140,7 @@ public class LogIn extends JFrame {
 				JOptionPane.showMessageDialog(null, txtName.getText() + "bị trùng tên. Hãy đặt tên nick khác", "KHÔNG VÀO ĐƯỢC", 0);
 			}
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
